@@ -7,6 +7,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Intent
 import android.os.Build
+import android.os.Bundle
 import androidx.core.app.JobIntentService
 import androidx.core.app.NotificationCompat
 
@@ -18,7 +19,7 @@ class WakeUpIntentService : JobIntentService() {
         super.onCreate()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createNotificationChannel();
-            val notificationIntent = Intent(this, MainActivity::class.java)
+            val notificationIntent = Intent(this, WakeUpIntentService::class.java)
             val pendingIntent = PendingIntent.getActivity(
                 this,
                 0, notificationIntent, 0
@@ -36,9 +37,9 @@ class WakeUpIntentService : JobIntentService() {
     override fun onHandleWork(intent: Intent) {
         val intentWakeUp = Intent(this, MainActivity::class.java)
         intent.putExtra(MainActivity.ALARM_MODE, true)
-        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+        intent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
         startActivity(intentWakeUp);
-        stopSelf()
+        stopForeground(true)
     }
 
     private fun createNotificationChannel() {
